@@ -1,0 +1,11 @@
+# replace localhost with your public domain name
+localhost
+
+# no reason for a route block since we arent stripping /covid anymore
+# proxies to the compose project network DNS name for the service (jupyter) on its listening port
+reverse_proxy /covid* covid:8888
+reverse_proxy /other* other:8888
+
+# file server will serve all unmatched paths as files from the root dir that you mounted as a volume
+root * /usr/share/caddy
+file_server

@@ -1,0 +1,40 @@
+version: "3.7"
+
+volumes:
+  caddy_data:
+
+services:
+  caddy:
+    image: "caddy"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - ./static/:/usr/share/caddy/
+      - ./Caddyfile:/etc/caddy/Caddyfile
+  covid:
+    image: "jupyter/minimal-notebook"
+    # no reason to expose these ports on the host
+    # ports:
+    #   - "8888:8888"
+    # you cant pass a jupyter_notebook_config.py file because its overwritten on startup
+    # instead you override the start command passing the config params as --ParamName.param=value format
+    # documentation on this procedure: https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#notebook-options
+    # for future ref the docs you want are for jupyter/minimal-notebook OR jupyter/base-notebook (which it inherits from)
+    # docs on this relationship: https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-minimal-notebook
+    # list of options you can pass (note, no 'c.' prefix like in config.py file): https://jupyter-notebook.readthedocs.io/en/stable/config.html
+    command: "start-notebook.sh --NotebookApp.base_url=/covid"
+    volumes:
+      # 1 hour lost on fucking "jovYan" NOT "joyVan" omg...
+      - "./covid/:/home/jovyan/work"
+    environment:
+      - "JUPYTER_TOKEN=test"
+  other:
+    image: "jupyter/minimal-notebook"
+    command: "start-notebook.sh --NotebookApp.base_url=/other"
+    volumes:
+      # 1 hour lost on fucking "jovYan" NOT "joyVan" omg...
+      - "./other/:/home/jovyan/work"
+    environment:
+      - "JUPYTER_TOKEN=test"
